@@ -1,6 +1,10 @@
 import Chalk from 'chalk';
 import Tracer from 'tracer';
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+import SambaClient from 'samba-client';
+
 import HomepageJson from './interfaces/homepageJson';
 
 // Locale to pull from
@@ -51,3 +55,28 @@ export function replacePlaceholder(str: string) {
 
 // Start
 logger.warn('< < < START > > >');
+
+logger.info('Loading environment variables...');
+
+// Load environment variables
+dotenv.config();
+
+logger.info('Checking environment variables');
+
+// Check that the important environment variables aren't empty/null
+[process.env.SAMBA_URL, process.env.SAMBA_USERNAME, process.env.SAMBA_PASSWORD].forEach((env) => {
+    if (env == null || env == '') {
+        logger.fatal(`One or more environment variables are not defined please check the ".env" file.`);
+        process.exit(1);
+    }
+});
+
+// Samba client
+const client = new SambaClient({
+    address: process.env.SAMBA_URL || '',
+    username: process.env.SAMBA_USERNAME,
+    password: process.env.SAMBA_PASSWORD,
+    domain: 'WORKGROUP',
+    maxProtocol: 'SMB3',
+    maskCmd: true,
+});
