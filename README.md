@@ -37,11 +37,11 @@ yarn
 ```
 then:
 ```shell
-yarn build
+yarn build:
 ```
 finally:
 ```shell
-yarn start
+yarn start:scraper
 ```
 
 ### With Docker
@@ -50,20 +50,9 @@ Fill out the environment variables in the `docker-compose.yml`
 ```shell
 docker-compose up -d
 ```
-
 #### If not using samba
-Run:
-```shell
-yarn
-```
-then: 
-```shell
-yarn build
-```
-finally:
-```shell
-yarn start
-```
+Currently, this is not supported if you would like to add this we encourage you to make
+a pull request!
 
 ## FAQ
     Q: Why samba?
