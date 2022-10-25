@@ -70,7 +70,16 @@ yarn start
 A: It's what we were given on [CommunityDragon](https://www.communitydragon.org/) hosting.
 
     Q: Can i use this without a samba share?
-A: Yes, you can
+A: Yes, you can!
+
+Run:
+```shell
+yarn build
+```
+then:
+```shell
+yarn start:scraper
+```
 
 ## Contribute
 In order to contribute you must fulfill these requirements
