@@ -18,6 +18,9 @@ That's all!
     Q: Why samba?
 A: It's what we were given on [CommunityDragon](https://www.communitydragon.org/) hosting.
 
+    Q: Can i use this without a samba share?
+A: Yes, you can
+
 ## Contribute
 In order to contribute you must fulfill these requirements
     
