@@ -6,7 +6,7 @@
     "build": "tsc -p .",
     "coverage": "vitest run --coverage",
     "dev": "ts-node-dev src",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "lint": "eslint */**/*.{js,ts,tsx} --quiet --fix",
     "start": "node ./dist/index.js",
     "test": "vitest"
   },

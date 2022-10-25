@@ -89,7 +89,6 @@ export const sync = async () => {
     }
 };
 
-
 if (require.main === module) {
     sync();
 }

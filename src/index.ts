@@ -54,7 +54,7 @@ const main = async () => {
     }
 
     // Sync to Samba Share
-    sync();
+    await sync();
 };
 
 main();
