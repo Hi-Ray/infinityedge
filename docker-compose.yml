@@ -7,3 +7,5 @@ services:
       - SAMBA_URL=${SAMBA_URL}
       - SAMBA_USERNAME=${SAMBA_USERNAME}
       - SAMBA_PASSWORD=${SAMBA_PASSWORD}
+    volumes:
+      - ./events:/infinityedge/events

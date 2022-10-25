@@ -5,13 +5,21 @@ import * as fs from 'fs/promises';
 import { PathLike } from 'fs';
 
 // Check that the important environment variables aren't empty/null
-export const checkEnvironment = () => {
-    [process.env.SAMBA_URL, process.env.SAMBA_USERNAME, process.env.SAMBA_PASSWORD].forEach((env) => {
-        if (env == null || env == '') {
+export const checkEnvironment = (die = false) => {
+    const environment = [process.env.SAMBA_URL, process.env.SAMBA_USERNAME, process.env.SAMBA_PASSWORD].map((env) => {
+        return env !== null && env !== '';
+    });
+    if (environment.includes(false)) {
+        if (die) {
             logger.fatal(`One or more environment variables are not defined please check the ".env" file.`);
             process.exit(1);
+        } else {
+            logger.info('One or more Samba environmental variables are not defined. Disabling Samba.');
+            return false;
         }
-    });
+    }
+    logger.info('Samba syncing enabled.');
+    return true;
 };
 
 export const createSamba = () => {
@@ -51,12 +59,7 @@ const verifyDirectoryExists = async (client: SambaClient, file: string) => {
     const pieces = file.split('/');
     const range = [...Array(pieces.length).keys()];
     for (const i of range) {
-        const name = file
-            .split('/')
-            .reverse()
-            .splice(pieces.length - i)
-            .reverse()
-            .join('/');
+        const name = pieces.slice(0, i).join('/');
         if (!name.includes('.') && !existsCache.includes(name) && (await client.fileExists(name)) === false) {
             logger.info('Making directory: ' + name);
             await client.mkdir(name);
@@ -66,7 +69,7 @@ const verifyDirectoryExists = async (client: SambaClient, file: string) => {
 };
 
 export const sync = async () => {
-    checkEnvironment();
+    checkEnvironment(true);
     const client = createSamba();
     const folders = await getDirectories('events');
     if ((await client.fileExists(`events`)) === false) {

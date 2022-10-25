@@ -32,7 +32,7 @@ dotenv.config();
 logger.info('Checking environment variables');
 
 // Check Samba Environmental Variables
-checkEnvironment();
+const samba = checkEnvironment();
 
 const main = async () => {
     // Get Current Events
@@ -44,9 +44,10 @@ const main = async () => {
         logger.info('Downloading event: ' + dist.event);
         await handle(dist.url, `events/${dist.event}`);
     }
-
     // Sync to Samba Share
-    await sync();
+    if (samba) {
+        await sync();
+    }
 };
 
 if (require.main === module) {
