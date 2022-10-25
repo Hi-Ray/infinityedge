@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { currentYear, getHomepage, toHours, locale, replacePlaceholder } from '../src';
+import { currentYear } from '../src';
+import {getHomepage, locale, replacePlaceholder} from '../src/scraper'
 
 describe('Current year', () => {
     it('should return the current year', () => {
@@ -48,11 +49,5 @@ describe('Url changer', () => {
                 'https://frontpage.na.leagueoflegends.com/{current_country_locale}/channel/lol/home/event/worlds-hub-2022',
             ),
         ).to.contain(locale);
-    });
-});
-
-describe('Hours to ms', () => {
-    it('should convert hours to ms', function () {
-        expect(toHours(1)).to.equal(3600000);
     });
 });

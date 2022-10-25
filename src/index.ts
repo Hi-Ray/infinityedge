@@ -21,14 +21,6 @@ console.log(
     ),
 );
 
-/**
- * Converts hours to milliseconds
- *
- * @param hours {number}
- */
-export function toHours(hours: number) {
-    return hours * 60 * 60 * 1000;
-}
 // Start
 logger.warn('< < < START > > >');
 
