@@ -4,6 +4,7 @@ FROM node:16-bullseye
 WORKDIR /infinityedge
 
 COPY package.json package.json
+COPY yarn.lock yarn.lock
 
 RUN yarn
 
