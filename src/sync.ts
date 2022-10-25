@@ -7,7 +7,7 @@ import { PathLike } from 'fs';
 // Check that the important environment variables aren't empty/null
 export const checkEnvironment = (die = false) => {
     const environment = [process.env.SAMBA_URL, process.env.SAMBA_USERNAME, process.env.SAMBA_PASSWORD].map((env) => {
-        return env !== null && env !== '';
+        return typeof env !== 'undefined' && env !== null && env !== '';
     });
     if (environment.includes(false)) {
         if (die) {
