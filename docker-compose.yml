@@ -3,4 +3,7 @@ services:
   infinityedge:
     build: .
     image: node:bullseye
-
+    environment:
+      - SAMBA_URL=${SAMBA_URL}
+      - SAMBA_USERNAME=${SAMBA_USERNAME}
+      - SAMBA_PASSWORD=${SAMBA_PASSWORD}
