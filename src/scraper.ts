@@ -47,7 +47,7 @@ export const scraper = async (json = false, name = 'events.json') => {
     }
     if (json) {
         const distJson = JSON.stringify(dists);
-        await fs.writeFile('events.json', distJson);
+        await fs.writeFile(name, distJson);
     }
     return dists;
 };
