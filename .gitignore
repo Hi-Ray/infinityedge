@@ -5,8 +5,6 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
-
-test/
 dist/
 
 # Local History for Visual Studio Code
