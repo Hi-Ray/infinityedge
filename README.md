@@ -25,3 +25,5 @@ Please follow the guides in the [Wiki](https://github.com/Hi-Ray/infinityedge/wi
 
 ## Support
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M31ZRUH)
+
+Another way of supporting us is starring the project!
