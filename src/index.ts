@@ -49,4 +49,6 @@ const main = async () => {
     await sync();
 };
 
-main();
+if (require.main === module) {
+    main();
+}

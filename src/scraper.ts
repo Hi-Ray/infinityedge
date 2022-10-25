@@ -47,13 +47,13 @@ export const scraper = async (json = false, name = 'events.json') => {
     }
     if (json) {
         const distJson = JSON.stringify(dists);
+        logger.info('Writing to json file: ' + name);
         await fs.writeFile(name, distJson);
     }
     return dists;
 };
 
 if (require.main === module) {
-    // creates the CLI
     const program = new Command();
     program.option('-o, --output <file>', 'JSON output', 'events.json').action((options) => {
         scraper(true, options.output);
