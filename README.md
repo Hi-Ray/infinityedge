@@ -8,11 +8,62 @@ Its main purpose its to watch over the frontend of the league of legends pages a
 upload the assets to universe.
 
 ## How to install?
+First check `src/index.ts` and verify you have the correct locale.
+
+### Without Docker
+#### If using samba
 First rename the file `.env.example` to `.env` fill in the details for the samba share
 otherwise an error will be thrown about missing environment variables.
-Next check `src/index.ts` and verify you have the correct locale.
 
-That's all!
+Then run:
+```shell
+yarn
+```
+
+then:
+```shell
+yarn build
+```
+
+finally: 
+```shell
+yarn start
+```
+
+#### If not using samba
+Run
+```shell
+yarn
+```
+then:
+```shell
+yarn build
+```
+finally:
+```shell
+yarn start
+```
+
+### With Docker
+#### If using samba
+Fill out the environment variables in the `docker-compose.yml`
+```shell
+docker-compose up -d
+```
+
+#### If not using samba
+Run:
+```shell
+yarn
+```
+then: 
+```shell
+yarn build
+```
+finally:
+```shell
+yarn start
+```
 
 ## FAQ
     Q: Why samba?
