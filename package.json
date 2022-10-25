@@ -6,8 +6,10 @@
     "build": "tsc -p .",
     "coverage": "vitest run --coverage",
     "dev": "ts-node-dev src",
-    "lint": "eslint */**/*.{js,ts,tsx} --quiet --fix",
+    "dev:scraper": "ts-node-dev ./src/scraper.ts",
+    "lint": "eslint */**/*.{js,ts} --quiet --fix",
     "start": "node ./dist/index.js",
+    "start:scraper": "node ./dist/scraper.js",
     "test": "vitest"
   },
   "devDependencies": {
