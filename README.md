@@ -12,10 +12,10 @@ Its main purpose its to watch over the frontend of the league of legends pages a
 upload the assets to universe.
 
 ## Requirements
-- Docker (Optional)
-- Node.JS (Optional if using Docker)
-- Yarn (Optional if using Docker)
-- smbclient (If using Docker will automatically installed)
+- [Docker](https://www.docker.com/) (Optional)
+- [Node.JS](https://nodejs.org/en/) (Will be installed if using Docker)
+- [Yarn](https://classic.yarnpkg.com/lang/en/) (Will be installed if using Docker)
+- smbclient (Will be installed if using Docker)
 
 ## How to install?
 Please follow the guides in the [Wiki](https://github.com/Hi-Ray/infinityedge/wiki)
