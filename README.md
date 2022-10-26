@@ -11,6 +11,12 @@ so we would lose out on assets hence infinityedge was born.
 Its main purpose its to watch over the frontend of the league of legends pages and download and
 upload the assets to universe.
 
+## Requirements
+- Docker (Optional)
+- Node.JS (Optional if using Docker)
+- Yarn (Optional if using Docker)
+- smbclient (If using Docker will automatically installed)
+
 ## How to install?
 Please follow the guides in the [Wiki](https://github.com/Hi-Ray/infinityedge/wiki)
 
