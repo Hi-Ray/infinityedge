@@ -3,6 +3,7 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/Hi-Ray/infinityedge)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/Hi-Ray/infinityedge)
 ![GitHub contributors](https://img.shields.io/github/contributors/Hi-Ray/infinityedge)
+[![Build Status](https://ci.hiray.me/api/badges/Hi-Ray/infinityedge/status.svg)](https://ci.hiray.me/Hi-Ray/infinityedge)
 
 An automation layer over stormrazor
 ## Why?
