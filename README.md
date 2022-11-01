@@ -4,6 +4,7 @@
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/Hi-Ray/infinityedge)
 ![GitHub contributors](https://img.shields.io/github/contributors/Hi-Ray/infinityedge)
 [![Build Status](https://ci.hiray.me/api/badges/Hi-Ray/infinityedge/status.svg)](https://ci.hiray.me/Hi-Ray/infinityedge)
+<a href="https://discord.gg/3csaW4EX4e"><img src="https://img.shields.io/discord/391025939062194176?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
 
 An automation layer over stormrazor
 ## Why?
