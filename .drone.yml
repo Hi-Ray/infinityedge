@@ -1,0 +1,52 @@
+kind: pipeline
+
+name: default
+type: docker
+
+steps:
+  - name: test
+    image: node:16-buster
+    commands:
+      - yarn
+      - yarn test
+
+  - name: linting
+    image: node:16-buster
+    commands:
+      - yarn
+      - yarn lint-test
+
+  - name: discord notification
+    image: appleboy/drone-discord
+    settings:
+      webhook_id:
+        - from_secret: discord_id
+      webhook_token:
+        - from_secret: discord_token
+    when:
+      status:
+        - failure
+        - success
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: ssh_host
+      username:
+        from_secret: ssh_username
+      password:
+        from_secret: ssh_password
+      port:
+        from_secret: ssh_port
+      command_timeout: 10m
+      script:
+        - git clone https://github.com/Hi-Ray/infinityedge.git
+        - cd infinityedge
+        - git pull
+        - docker-compose down
+        - docker-compose rm
+        - docker-compose up -d
+    when:
+      status:
+        - success
