@@ -30,18 +30,19 @@ export function replacePlaceholder(str: string) {
 export const scraper = async (json = false, name = 'events.json') => {
     const dists: Event[] = [];
     const homePage = await getHomepage();
-    const links = homePage.default.navigation
-        .filter((obj) => 'url' in obj && obj.url.includes('event'))
-        .map((obj) => obj.url);
-    const replacedLinks = links.map((link) => replacePlaceholder(link));
-    for (const link of replacedLinks) {
-        const eventName = link.split('/').slice(-1)[0];
-        logger.info(`Found event: ${eventName}`);
-        const webPage = await axios.get(link);
+    const events = homePage.npe.navigation
+        .filter((obj) => 'url' in obj && obj.url.includes('{current_country_locale}'))
+    for (const event of events) {
+        event.url = replacePlaceholder(event.url);
+        logger.info(`Found event: ${event.id}`);
+        const webPage = await axios.get(event.url);
         const webData = cheerio.load(webPage.data);
         webData('script').each((_, link) => {
             if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('dist.js')) {
-                dists.push({ event: eventName, url: link.attribs.src.split('?')[0] });
+                dists.push({ event: event.id, url: link.attribs.src.split('?')[0] });
+            }
+            if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('app.js')) {
+                dists.push({ event: event.id, url: `https://prod.embed.rgpub.io/${link.attribs.src.split('?')[0]}`});
             }
         });
     }

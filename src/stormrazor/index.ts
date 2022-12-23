@@ -20,7 +20,7 @@ export const handle = async (distURL: string, tmpDir: string) => {
     const fileName = path.basename(distURL).split('?')[0];
 
     // check if file is a dist file
-    if (fileName !== 'dist.js') {
+    if (fileName !== 'dist.js' && fileName !== 'app.js') {
         logger.error('please provide the dist file of the frontpage');
         process.exit(1);
     }
@@ -43,12 +43,12 @@ export const handle = async (distURL: string, tmpDir: string) => {
     logger.info(`found ${potentialFiles.length} potential files.`);
 
     // finds the files from the potential files
-    const foundFiles = findFiles(tmpDir, potentialFiles);
+    const foundFiles = findFiles(tmpDir, potentialFiles, fileName.includes('dist.js'));
 
     // download each found file
     for (const foundFile of foundFiles) {
         // create the export directory
-        const exportDir = path.join(tmpDir, path.dirname(foundFile));
+        const exportDir = path.join(tmpDir, path.dirname(foundFile.replace('_/lib-embed', '')));
         await fs.mkdir(exportDir, { recursive: true });
 
         // formats the download path
