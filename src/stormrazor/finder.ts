@@ -32,5 +32,5 @@ export const findFiles = (exportDir: string, potentialFiles: string[], dist = fa
 };
 
 export const findSvgs = (content: string): string[] => {
-    return content.match(/<svg.*?<\/svg>/gm) ?? [];
+    return content.match(/<svg .*?<\/svg>/gm) ?? [];
 };
