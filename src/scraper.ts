@@ -30,8 +30,9 @@ export function replacePlaceholder(str: string) {
 export const scraper = async (json = false, name = 'events.json') => {
     const dists: Event[] = [];
     const homePage = await getHomepage();
-    const events = homePage.npe.navigation
-        .filter((obj) => 'url' in obj && obj.url.includes('{current_country_locale}'))
+    const events = homePage.npe.navigation.filter(
+        (obj) => 'url' in obj && obj.url.includes('{current_country_locale}'),
+    );
     for (const event of events) {
         event.url = replacePlaceholder(event.url);
         logger.info(`Found event: ${event.id}`);
@@ -42,7 +43,7 @@ export const scraper = async (json = false, name = 'events.json') => {
                 dists.push({ event: event.id, url: link.attribs.src.split('?')[0] });
             }
             if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('app.js')) {
-                dists.push({ event: event.id, url: `https://prod.embed.rgpub.io/${link.attribs.src.split('?')[0]}`});
+                dists.push({ event: event.id, url: `https://prod.embed.rgpub.io/${link.attribs.src.split('?')[0]}` });
             }
         });
     }

@@ -1,8 +1,9 @@
-import { findFiles } from './finder';
+import { findFiles, findSvgs } from './finder';
 import download from 'download';
 import Tracer from 'tracer';
 import fs from 'fs-extra';
 import path from 'path';
+import crypto from 'crypto';
 
 const logger = Tracer.colorConsole();
 
@@ -45,6 +46,8 @@ export const handle = async (distURL: string, tmpDir: string) => {
     // finds the files from the potential files
     const foundFiles = findFiles(tmpDir, potentialFiles, fileName.includes('dist.js'));
 
+    const foundSvgs = findSvgs(content);
+
     // download each found file
     for (const foundFile of foundFiles) {
         // create the export directory
@@ -62,4 +65,9 @@ export const handle = async (distURL: string, tmpDir: string) => {
             logger.warn(`failed to download ${foundFile}`);
         }
     }
+
+    for (const svg of foundSvgs) {
+        fs.writeFileSync(`${tmpDir}/${crypto.createHash('md5').update(svg).digest("hex")}.svg`, svg);
+    }
+
 };

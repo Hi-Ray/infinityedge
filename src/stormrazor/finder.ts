@@ -30,3 +30,7 @@ export const findFiles = (exportDir: string, potentialFiles: string[], dist = fa
     logger.info(`Found ${foundFiles.length} potential assets files.`);
     return foundFiles.filter((file) => file.includes('?'));
 };
+
+export const findSvgs = (content: string): string[] => {
+    return content.match(/<svg.*?<\/svg>/gm) ?? [];
+};
