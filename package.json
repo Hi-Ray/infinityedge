@@ -41,7 +41,7 @@
     "dev:scraper": "ts-node-dev ./src/scraper.ts",
     "lint": "eslint src/**/*.ts --quiet --fix",
     "lint-test": "eslint src/**/*.ts",
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/src/index.js",
     "start:scraper": "node ./dist/scraper.js",
     "test": "vitest",
     "update-deps": "npx npm-check-updates -u"
