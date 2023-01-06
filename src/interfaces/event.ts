@@ -1,4 +1,4 @@
-export interface Event {
+export default interface Event {
     event: string;
     url: string;
 }
