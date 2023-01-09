@@ -18,7 +18,7 @@ const logger = Tracer.colorConsole();
 export const findFiles = async (exportDir: string, potentialFiles: string[], dist = false): Promise<string[]> => {
     // Using regex in handle to filter instead of this function for now
 
-    const foundFiles = potentialFiles;
+    const foundFiles = potentialFiles.filter(file => (file.includes("lib-embed") || (!potentialFiles.includes(`_/lib-embed/images${file}`) && !potentialFiles.includes(`_/lib-embed/videos${file}`))));
 
     await fs.writeFile(path.join(exportDir, 'files.txt'), foundFiles.join('\n'), { flag: 'a' });
 
