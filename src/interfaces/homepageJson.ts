@@ -4,7 +4,7 @@ interface navigation {
     isPlugin: boolean;
     enabled: boolean;
     visible: boolean;
-    url: string;
+    url?: string;
     priority: number;
 }
 

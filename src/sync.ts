@@ -1,14 +1,23 @@
 import SambaClient from 'samba-client';
+import Tracer from 'tracer';
 
-import { currentYear, logger } from '.';
-import * as fs from 'fs/promises';
 import { PathLike } from 'fs';
+import * as fs from 'fs/promises';
 
-// Check that the important environment variables aren't empty/null
+const logger = Tracer.colorConsole();
+
+const currentYear = new Date().getFullYear();
+
+/**
+ * Check that the important environment variables aren't empty/null.
+ *
+ * @param [die=false] {boolean}
+ */
 export const checkEnvironment = (die = false) => {
     const environment = [process.env.SAMBA_URL, process.env.SAMBA_USERNAME, process.env.SAMBA_PASSWORD].map((env) => {
         return typeof env !== 'undefined' && env !== null && env !== '';
     });
+
     if (environment.includes(false)) {
         if (die) {
             logger.fatal(`One or more environment variables are not defined please check the ".env" file.`);
@@ -18,12 +27,18 @@ export const checkEnvironment = (die = false) => {
             return false;
         }
     }
+
     logger.info('Samba syncing enabled.');
     return true;
 };
 
-export const createSamba = () => {
-    const client = new SambaClient({
+/**
+ * Create a samba client.
+ *
+ * @returns {SambaClient}
+ */
+export const createSamba = (): SambaClient => {
+    return new SambaClient({
         address: process.env.SAMBA_URL || '',
         username: process.env.SAMBA_USERNAME,
         password: process.env.SAMBA_PASSWORD,
@@ -31,15 +46,26 @@ export const createSamba = () => {
         maxProtocol: 'SMB3',
         maskCmd: true,
     });
-    return client;
 };
 
-const getDirectories = async (source: PathLike) =>
+/**
+ * Gets all the samba directories.
+ *
+ * @async
+ * @param source {PathLike} the source directory.
+ */
+const getDirectories = async (source: PathLike): Promise<string[]> =>
     (await fs.readdir(source, { withFileTypes: true }))
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => dirent.name);
 
-const getFileList = async (dirName: string) => {
+/**
+ * Get the samba file list.
+ *
+ * @async
+ * @param dirName {string}
+ */
+const getFileList = async (dirName: string): Promise<string[]> => {
     let files: string[] = [];
     const items = await fs.readdir(dirName, { withFileTypes: true });
 
@@ -53,14 +79,26 @@ const getFileList = async (dirName: string) => {
     return files;
 };
 
+/**
+ * Directory exists cache.
+ */
 const existsCache: string[] = [];
 
-const verifyDirectoryExists = async (client: SambaClient, file: string) => {
+/**
+ * Verify that the samba directory exists.
+ *
+ * @async
+ * @param client {SambaClient}
+ * @param file {string}
+ */
+const verifyDirectoryExists = async (client: SambaClient, file: string): Promise<void> => {
     const pieces = file.split('/');
     const range = [...Array(pieces.length).keys()];
+
     for (const i of range) {
         const name = pieces.slice(0, i).join('/');
-        if (!name.includes('.') && !existsCache.includes(name) && (await client.fileExists(name)) === false) {
+
+        if (!name.includes('.') && !existsCache.includes(name) && !(await client.fileExists(name))) {
             logger.info('Making directory: ' + name);
             await client.mkdir(name);
             existsCache.push(name);
@@ -68,21 +106,33 @@ const verifyDirectoryExists = async (client: SambaClient, file: string) => {
     }
 };
 
+/**
+ * Sync the data with the samba share.
+ *
+ * @async
+ */
 export const sync = async () => {
     checkEnvironment(true);
+
     const client = createSamba();
     const folders = await getDirectories('events');
-    if ((await client.fileExists(`events`)) === false) {
+
+    if (!(await client.fileExists(`events`))) {
         await client.mkdir(`events`);
     }
+
     existsCache.push('events');
-    if ((await client.fileExists(`events/${currentYear}`)) === false) {
+
+    if (!(await client.fileExists(`events/${currentYear}`))) {
         await client.mkdir(`events/${currentYear}`);
     }
+
     existsCache.push(`events/${currentYear}`);
+
     for (const event of folders) {
-        if ((await client.fileExists(`events/${currentYear}/${event}`)) === false) {
+        if (!(await client.fileExists(`events/${currentYear}/${event}`))) {
             const files = await getFileList(`events/${event}`);
+
             for (const file of files) {
                 logger.info('Transferring file' + file);
                 await verifyDirectoryExists(client, `events/${currentYear}/${file}`);
@@ -93,5 +143,5 @@ export const sync = async () => {
 };
 
 if (require.main === module) {
-    sync();
+    sync().catch(logger.error);
 }
