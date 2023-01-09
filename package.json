@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "GPL-3.0-only",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=16.0.0"
   },
   "engineStrict": true,
   "os": [
@@ -12,7 +12,8 @@
     "win32"
   ],
   "cpu": [
-    "x64"
+    "x64",
+    "arm64"
   ],
   "homepage": "https://github.com/Hi-Ray/infinityedge#readme",
   "bugs": {

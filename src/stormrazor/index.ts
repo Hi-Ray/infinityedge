@@ -9,7 +9,7 @@ import path from 'path';
 const logger = Tracer.colorConsole();
 
 // Known main files for frontpages.
-const knownMainFiles = ['dist.js', 'app.js'];
+export const knownMainFiles = ['dist.js', 'app.js'];
 
 /**
  * Checks for known main files.
@@ -55,7 +55,15 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
             await download(downloadPath, exportDir);
             logger.info(`downloaded ${foundFile}`);
         } catch {
-            logger.warn(`failed to download ${foundFile}`);
+            try {
+                // Try using a lib-embed path if the original didn't work
+                if (downloadPath.includes("lib-embed")) throw Error;
+                const fileType = foundFile.includes(".webm") ? "videos" : "images";
+                await downloadFiles([foundFile], tmpDir, path.join(basePath, `_/lib-embed/${fileType}/`));
+            } catch {
+                logger.warn(`failed to download ${foundFile}`);
+            }
+            
         }
     }
 };
@@ -107,7 +115,7 @@ const saveSvgs = async (foundSvgs: string[], tmpDir: string) => {
  */
 export const handle = async (distURL: string, tmpDir: string) => {
     // Regex for finding paths.
-    const pathRegex = /"([^"]*)"/g;
+    const pathRegex = /"\.?([\w\/-]*\.(?:jpg|png|gif|webm))/g;
 
     // The base path without the file.
     const basePath = path.dirname(distURL).replace(':/', '://');
@@ -128,9 +136,7 @@ export const handle = async (distURL: string, tmpDir: string) => {
     const content = await fs.readFile(path.join(tmpDir, fileName), { encoding: 'utf8' });
 
     // Find potential files.
-    const potentialFiles: string[] = (content.match(pathRegex) ?? []).map((x) =>
-        x.slice(x.startsWith('"') ? 1 : 0, x.length - 1),
-    );
+    const potentialFiles: string[] = [...content.matchAll(pathRegex)].map((m) => m[1]) ?? [];
 
     // Log count of potential files.
     logger.info(`Found ${potentialFiles.length} potential files.`);

@@ -1,5 +1,6 @@
 import HomepageJson from './interfaces/homepageJson';
 import Event from './interfaces/event';
+import { knownMainFiles } from './stormrazor';
 
 import { Command } from 'commander';
 import * as cheerio from 'cheerio';
@@ -45,10 +46,8 @@ export const scraper = async (json = false, name = 'events.json') => {
     const dists: Event[] = [];
     const homePage = await getHomepage();
 
-    const events = homePage.npe.navigation.filter(
-        (obj) =>
-            ('url' in obj && obj.url?.includes('{current_country_locale}')) ||
-            (obj.url?.includes('https://prod.embed.rgpub.io') && obj.url?.includes(locale)),
+    const events = homePage.npe.navigation.filter((obj) => 
+        'url' in obj && obj.id.includes('202'),
     );
 
     for (const event of events) {
@@ -56,23 +55,18 @@ export const scraper = async (json = false, name = 'events.json') => {
 
         logger.info(`Found event: ${event.id}`);
 
-        if (event.url != null) {
+        if (typeof event.url !== 'undefined') {
             const webPage = await axios.get(event.url);
-
             const webData = cheerio.load(webPage.data);
 
             webData('script').each((_, link) => {
-                // Riots old format
-                if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('dist.js')) {
+                if (typeof link.attribs.src !== 'undefined' && knownMainFiles.some(file => link.attribs.src.includes(file))) {
+                    if(!link.attribs.src.includes("http")) {
+                        const url = new URL(event.url ?? "");
+                        link.attribs.src = `${url.protocol}//${url.hostname}${link.attribs.src}`;
+                        logger.info(link.attribs.src);
+                    }
                     dists.push({ event: event.id, url: link.attribs.src.split('?')[0] });
-                }
-
-                // Riots new format used at the end of 2022
-                if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('app.js')) {
-                    dists.push({
-                        event: event.id,
-                        url: `https://prod.embed.rgpub.io/${link.attribs.src.split('?')[0]}`,
-                    });
                 }
             });
         }

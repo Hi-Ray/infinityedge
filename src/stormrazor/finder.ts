@@ -16,26 +16,16 @@ const logger = Tracer.colorConsole();
  * @returns {Promise<string[]>} The found files.
  */
 export const findFiles = async (exportDir: string, potentialFiles: string[], dist = false): Promise<string[]> => {
-    // Iterate over each potential file,
-    let foundFiles = potentialFiles.filter((file) => file.startsWith('_/lib-embed/'));
+    // Using regex in handle to filter instead of this function for now
 
-    // Check if it's a dist file,
-    if (dist) {
-        foundFiles = potentialFiles
-            .filter((file) => /(\.[a-z].*)/.test(file))
-            .filter((file) => !file.startsWith('http://') && !file.startsWith('https://'));
-    }
-
-    foundFiles = foundFiles.map((file) => file.split('?')[0]);
+    const foundFiles = potentialFiles;
 
     await fs.writeFile(path.join(exportDir, 'files.txt'), foundFiles.join('\n'), { flag: 'a' });
-
-    foundFiles = foundFiles.filter((file) => file.includes('?'));
 
     // Log amount of found files
     logger.info(`Found ${foundFiles.length} potential assets files.`);
 
-    return foundFiles.filter((file) => file.includes('?'));
+    return foundFiles;
 };
 
 /**
