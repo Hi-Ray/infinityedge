@@ -13,9 +13,14 @@ so we would lose out on assets hence infinityedge was born.
 Its main purpose its to watch over the frontend of the league of legends pages and download and
 upload the assets to universe.
 
+## Supported OS's
+<img alt="Windows" title="Windows" src="https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/WIN.png">
+<img alt="Apple" title="Apple" src="https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/MAC.png">
+<img alt="Linux" title="Linux" src="https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/LIN.png">
+
 ## Requirements
 - [Docker](https://www.docker.com/) (Optional)
-- [Node.JS](https://nodejs.org/en/) (Will be installed if using Docker)
+- [Node.JS](https://nodejs.org/en/) (>=18.0.0 64Bit only) (Will be installed if using Docker)
 - [Yarn](https://classic.yarnpkg.com/lang/en/) (Will be installed if using Docker)
 - smbclient (Will be installed if using Docker)
 
@@ -35,3 +40,6 @@ Please follow the guides in the [Wiki](https://github.com/Hi-Ray/infinityedge/wi
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M31ZRUH)
 
 Another way of supporting us is starring the project!
+
+## Technologies
+<img alt="Tech stack" src="https://skillicons.dev/icons?i=js,docker,githubactions,idea,vscode,nodejs,ts">

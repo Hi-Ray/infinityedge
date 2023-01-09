@@ -5,13 +5,13 @@ type: docker
 
 steps:
   - name: test
-    image: node:16-buster
+    image: node:18-buster
     commands:
       - yarn
       - yarn test
 
   - name: linting
-    image: node:16-buster
+    image: node:18-buster
     commands:
       - yarn
       - yarn lint-test
