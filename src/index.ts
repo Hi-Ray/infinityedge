@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 const logger = Tracer.colorConsole();
 
 // Date for the license notice
-const currentYear = new Date().getFullYear();
+export const currentYear = new Date().getFullYear();
 
 // License notice
 console.log(
