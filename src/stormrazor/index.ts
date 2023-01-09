@@ -26,7 +26,7 @@ const checkForMainFile = (fileName: string) => {
     });
 
     if (!foundMainFile) {
-        logger.error('please provide the dist file of the frontpage');
+        logger.error('Please provide the dist file of the frontpage');
         process.exit(1);
     }
 };
@@ -36,7 +36,7 @@ const checkForMainFile = (fileName: string) => {
  *
  * @async
  * @param foundFiles {string[]}
- * @param tmpDir {string}
+ * @param tmpDir {string} dist/event
  * @param basePath {string}
  */
 const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: string) => {
@@ -45,17 +45,25 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
         // Create the export directory.
         // Need to replace "_/lib-embed" because it makes two directories instead of the one.
         const exportDir = path.join(tmpDir, path.dirname(foundFile.replace('_/lib-embed', '')));
-        await fs.mkdir(exportDir, { recursive: true });
-
-        // Formats the download path.
-        const downloadPath = path.join(basePath, foundFile).replace(':/', '://').replace(':\\', '://');
 
         try {
+            await fs.mkdir(exportDir, { recursive: true });
+        } catch (e) {
+            // Folder already exists.
+        }
+
+        // Formats the download path.
+        let downloadPath = path.join(basePath, foundFile).replace(':/', '://').replace(':\\', '://');
+
+        downloadPath = downloadPath.replaceAll('\\', '/');
+
+        try {
+            logger.warn(`DOWNLOADING: ${downloadPath} TO: ${exportDir}`);
             // Downloads the file.
             await download(downloadPath, exportDir);
-            logger.info(`downloaded ${foundFile}`);
+            logger.info(`Downloaded ${foundFile}`);
         } catch {
-            logger.warn(`failed to download ${foundFile}`);
+            logger.warn(`Failed to download ${foundFile}`);
         }
     }
 };
@@ -68,12 +76,12 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
  * @param tmpDir The directory to save the files.
  */
 const saveSvgs = async (foundSvgs: string[], tmpDir: string) => {
+    const exportDir = path.join(tmpDir, 'svg');
+    // Create the export directory.
+    await fs.mkdir(exportDir, { recursive: true });
+
     // Download each found file.
     for (const svg of foundSvgs) {
-        const exportDir = path.join(tmpDir, 'svg');
-        // Create the export directory.
-        await fs.mkdir(exportDir, { recursive: true });
-
         // For some reason this gets exported so ignoring this.
         if (svg.includes('<svg>"+r+"</svg>')) continue;
 

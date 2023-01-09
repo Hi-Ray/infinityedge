@@ -38,7 +38,7 @@ const samba = checkEnvironment();
 const main = async () => {
     // Get Current Events
     const dists = await scraper();
-    logger.info(`Found ${dists.length} current events.`);
+    logger.info(`Found ${dists.length} current event${dists.length > 1 ? 's' : ''}.`);
 
     // Use stormrazor to download all events
     for (const dist of dists) {

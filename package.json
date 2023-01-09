@@ -71,5 +71,6 @@
     "fs-extra": "^11.1.0",
     "samba-client": "^6.0.0",
     "tracer": "^1.1.6"
-  }
+  },
+  "packageManager": "yarn@1.22.1"
 }

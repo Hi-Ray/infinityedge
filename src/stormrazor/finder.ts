@@ -17,7 +17,7 @@ const logger = Tracer.colorConsole();
  */
 export const findFiles = async (exportDir: string, potentialFiles: string[], dist = false): Promise<string[]> => {
     // Iterate over each potential file,
-    let foundFiles = potentialFiles.filter((file) => file.startsWith('_/lib-embed/'));
+    let foundFiles = potentialFiles.filter((file) => file.startsWith('_/lib-embed/') || file.includes('./'));
 
     // Check if it's a dist file,
     if (dist) {
@@ -28,14 +28,16 @@ export const findFiles = async (exportDir: string, potentialFiles: string[], dis
 
     foundFiles = foundFiles.map((file) => file.split('?')[0]);
 
-    await fs.writeFile(path.join(exportDir, 'files.txt'), foundFiles.join('\n'), { flag: 'a' });
+    await fs.writeFile(path.join(exportDir, 'files.txt'), foundFiles.join('\n'), { flag: 'a+' });
 
-    foundFiles = foundFiles.filter((file) => file.includes('?'));
+    foundFiles = foundFiles.filter(
+        (file) => file.includes('?') || (file.startsWith('./') && file !== './') || file.startsWith('_/'),
+    );
 
     // Log amount of found files
     logger.info(`Found ${foundFiles.length} potential assets files.`);
 
-    return foundFiles.filter((file) => file.includes('?'));
+    return foundFiles;
 };
 
 /**
@@ -82,7 +84,7 @@ export const findSvgs = async (exportDir: string, fileData: string): Promise<str
     logger.info(`Found ${matches.length} SVGs.`);
 
     if (matches.length !== 0)
-        await fs.writeFile(path.join(exportDir, 'files.txt'), fileNames.join('\n'), { flag: 'a' });
+        await fs.writeFile(path.join(exportDir, 'files.txt'), fileNames.join('\n'), { flag: 'a+' });
 
     return matches ?? [];
 };

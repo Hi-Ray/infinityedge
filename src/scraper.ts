@@ -48,11 +48,14 @@ export const scraper = async (json = false, name = 'events.json') => {
     const events = homePage.npe.navigation.filter(
         (obj) =>
             ('url' in obj && obj.url?.includes('{current_country_locale}')) ||
-            (obj.url?.includes('https://prod.embed.rgpub.io') && obj.url?.includes(locale)),
+            (obj.url?.includes('https://prod.embed.rgpub.io') &&
+                obj.url?.includes(locale) &&
+                !obj.id.startsWith('latest_patch_notes') &&
+                !obj.id.startsWith('overview')),
     );
 
     for (const event of events) {
-        event.url ? replacePlaceholder(event.url) : event.url;
+        event.url = event.url?.includes('{current_country_locale}') ? replacePlaceholder(event.url) : event.url;
 
         logger.info(`Found event: ${event.id}`);
 
@@ -68,7 +71,7 @@ export const scraper = async (json = false, name = 'events.json') => {
                 }
 
                 // Riots new format used at the end of 2022
-                if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('app.js')) {
+                if (typeof link.attribs.src !== 'undefined' && link.attribs.src.includes('_nuxt/app.js')) {
                     dists.push({
                         event: event.id,
                         url: `https://prod.embed.rgpub.io/${link.attribs.src.split('?')[0]}`,
