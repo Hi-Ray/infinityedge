@@ -57,13 +57,12 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
         } catch {
             try {
                 // Try using a lib-embed path if the original didn't work
-                if (downloadPath.includes("lib-embed")) throw Error;
-                const fileType = foundFile.includes(".webm") ? "videos" : "images";
+                if (downloadPath.includes('lib-embed')) throw Error;
+                const fileType = foundFile.includes('.webm') ? 'videos' : 'images';
                 await downloadFiles([foundFile], tmpDir, path.join(basePath, `_/lib-embed/${fileType}/`));
             } catch {
                 logger.warn(`failed to download ${foundFile}`);
             }
-            
         }
     }
 };

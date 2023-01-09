@@ -46,9 +46,7 @@ export const scraper = async (json = false, name = 'events.json') => {
     const dists: Event[] = [];
     const homePage = await getHomepage();
 
-    const events = homePage.npe.navigation.filter((obj) => 
-        'url' in obj && obj.id.includes('202'),
-    );
+    const events = homePage.npe.navigation.filter((obj) => 'url' in obj && obj.id.includes('202'));
 
     for (const event of events) {
         event.url ? replacePlaceholder(event.url) : event.url;
@@ -60,9 +58,12 @@ export const scraper = async (json = false, name = 'events.json') => {
             const webData = cheerio.load(webPage.data);
 
             webData('script').each((_, link) => {
-                if (typeof link.attribs.src !== 'undefined' && knownMainFiles.some(file => link.attribs.src.includes(file))) {
-                    if(!link.attribs.src.includes("http")) {
-                        const url = new URL(event.url ?? "");
+                if (
+                    typeof link.attribs.src !== 'undefined' &&
+                    knownMainFiles.some((file) => link.attribs.src.includes(file))
+                ) {
+                    if (!link.attribs.src.includes('http')) {
+                        const url = new URL(event.url ?? '');
                         link.attribs.src = `${url.protocol}//${url.hostname}${link.attribs.src}`;
                         logger.info(link.attribs.src);
                     }
