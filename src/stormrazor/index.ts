@@ -45,23 +45,27 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
         // Create the export directory.
         // Need to replace "_/lib-embed" because it makes two directories instead of the one.
         const exportDir = path.join(tmpDir, path.dirname(foundFile.replace('_/lib-embed', '')));
+        // Ignore any files that are in the LCU.
+        if (foundFile.startsWith('/fe/')) continue;
+
         await fs.mkdir(exportDir, { recursive: true });
 
         // Formats the download path.
         const downloadPath = path.join(basePath, foundFile).replace(':/', '://').replace(':\\', '://');
 
+        logger.info(`Attempting to download ${foundFile}`);
         try {
             // Downloads the file.
             await download(downloadPath, exportDir);
-            logger.info(`downloaded ${foundFile}`);
+            logger.info(`Downloaded ${foundFile}`);
         } catch {
             try {
                 // Try using a lib-embed path if the original didn't work.
-                logger.info(`Attempting to downloaad: ${downloadPath} with base path of: ${basePath}`);
                 const fileType = foundFile.includes('.webm') ? 'videos' : 'images';
                 await downloadFiles([foundFile], tmpDir, path.join(basePath, `_/lib-embed/${fileType}/`));
+                logger.info(`Downloaded ${foundFile}`);
             } catch {
-                logger.warn(`failed to download ${foundFile}`);
+                logger.warn(`Failed to download ${foundFile}`);
             }
         }
     }
