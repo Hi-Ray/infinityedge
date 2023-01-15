@@ -48,5 +48,7 @@ steps:
         - docker-compose rm
         - docker-compose up -d
     when:
+      branch:
+        - master
       status:
         - success
