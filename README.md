@@ -20,7 +20,7 @@ upload the assets to universe.
 
 ## Requirements
 - [Docker](https://www.docker.com/) (Optional)
-- [Node.JS](https://nodejs.org/en/) (>=18.0.0 64Bit only) (Will be installed if using Docker)
+- [Node.JS](https://nodejs.org/en/) (>=16.0.0 64Bit only) (Will be installed if using Docker)
 - [Yarn](https://classic.yarnpkg.com/lang/en/) (Will be installed if using Docker)
 - smbclient (Will be installed if using Docker)
 
