@@ -125,7 +125,7 @@ const saveSvgs = async (foundSvgs: string[], tmpDir: string) => {
  */
 export const handle = async (distURL: string, tmpDir: string) => {
     // Regex for finding paths.
-    const pathRegex = /"\.?([\w\/-]*\.(?:jpg|png|gif|webm))/g;
+    const pathRegex = /"\.?([\w\.\/-]*\.(?:jpg|png|gif|webm))/g;
 
     // The base path without the file.
     const basePath = path.dirname(distURL).replace(':/', '://');
@@ -152,7 +152,7 @@ export const handle = async (distURL: string, tmpDir: string) => {
     logger.info(`Found ${potentialFiles.length} potential files.`);
 
     // Finds the files from the potential files.
-    const foundFiles = await findFiles(tmpDir, potentialFiles, fileName.includes('dist.js'));
+    const foundFiles = await findFiles(tmpDir, potentialFiles);
 
     // Finds the inline HTML SVGs from the file files.
     const foundSvgs = await findSvgs(tmpDir, content);

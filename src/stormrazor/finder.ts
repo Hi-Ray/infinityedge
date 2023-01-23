@@ -12,10 +12,9 @@ const logger = Tracer.colorConsole();
  * @async
  * @param exportDir {string} Directory to export to.
  * @param potentialFiles {string[]} Potential files found.
- * @param dist {boolean} Backwards compatibility for dist.js files.
  * @returns {Promise<string[]>} The found files.
  */
-export const findFiles = async (exportDir: string, potentialFiles: string[], dist = false): Promise<string[]> => {
+export const findFiles = async (exportDir: string, potentialFiles: string[]): Promise<string[]> => {
     // Using regex in handle to filter instead of this function for now
 
     const foundFiles = potentialFiles.filter(
