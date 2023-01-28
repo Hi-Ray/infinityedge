@@ -1,5 +1,6 @@
 import SambaClient from 'samba-client';
 import Tracer from 'tracer';
+import dotenv from 'dotenv';
 
 import { PathLike } from 'fs';
 import * as fs from 'fs/promises';
@@ -143,5 +144,6 @@ export const sync = async () => {
 };
 
 if (require.main === module) {
+    dotenv.config();
     sync().catch(logger.error);
 }
