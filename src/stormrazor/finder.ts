@@ -41,6 +41,7 @@ export const findFiles = async (exportDir: string, potentialFiles: string[]): Pr
  * @param fileData {string} File data.
  * @returns {Promise<string[]>} Found files.
  */
+/* eslint-disable */
 const findJsSvgs = async (exportDir: string, fileData: string): Promise<string[]> => {
     const jsSvgRegex = /\[.\("svg",\{.*\}\}\)\]\)\]\)\]/gimsu;
 

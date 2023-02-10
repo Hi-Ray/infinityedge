@@ -1,30 +1,31 @@
 import { describe, expect, it } from 'vitest';
-import { getHomepage, locale, replacePlaceholder } from '../src/scraper';
+import { getHomepages, locale, replacePlaceholder } from '../src/scraper';
+import HomepageJson from '../src/interfaces/homepageJson';
 
 describe('Get homepage', () => {
-    it('should be a valid object', async () => {
-        const homepageData = await getHomepage();
-        expect(homepageData).to.be.an('object');
+    it('should be a valid array', async () => {
+        const homepageData = await getHomepages();
+        expect(homepageData).to.be.an('array');
     });
 
     it('should contain a default key', async () => {
-        const homepageData = await getHomepage();
+        const homepageData = <HomepageJson>(await getHomepages()).filter(homepage => homepage.game === "lol")[0].data;
         expect(homepageData.default).to.be.an('object');
     });
 
     it('should contain a navigation array inside the default key', async () => {
-        const homepageData = await getHomepage();
+        const homepageData = <HomepageJson>(await getHomepages()).filter(homepage => homepage.game === "lol")[0].data;
         expect(homepageData.default.navigation).to.be.an('array');
     });
 
     it('should have an object inside the navigation array', async () => {
-        const homepageData = await getHomepage();
+        const homepageData = <HomepageJson>(await getHomepages()).filter(homepage => homepage.game === "lol")[0].data;
 
         expect(homepageData.default.navigation[0]).to.be.an('object');
     });
 
     it('should have all the keys inside the navigation array object', async () => {
-        const homepageData = await getHomepage();
+        const homepageData = <HomepageJson>(await getHomepages()).filter(homepage => homepage.game === "lol")[0].data;
 
         expect(homepageData.default.navigation[0].displayName).toBeDefined();
         expect(homepageData.default.navigation[0].enabled).toBeDefined();

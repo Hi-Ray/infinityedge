@@ -5,7 +5,7 @@ import { knownMainFiles } from './stormrazor';
 import { Command } from 'commander';
 import * as cheerio from 'cheerio';
 import * as fs from 'fs/promises';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Tracer from 'tracer';
 import TftHomepageJson from './interfaces/tfthomepageJson';
 
@@ -15,27 +15,34 @@ const logger = Tracer.colorConsole();
 export const locale = 'en_US';
 
 // Homepage url.
-const homepageUrls = [
-    'https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=lol.client_settings.tft',
-    'https://lolstatic-a.akamaihd.net/lc-home-config/v1/live/lc_home_en_US.json',
-];
+const homepageUrls = {
+    'lol': 'https://lolstatic-a.akamaihd.net/lc-home-config/v1/live/lc_home_en_US.json',
+    'tft': 'https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=lol.client_settings.tft'
+};
+
 
 /**
  * Returns the homepage data.
  *
  * @async
  */
-export async function getHomepages(): Promise<(TftHomepageJson | HomepageJson)[]> {
+export async function getHomepages(): Promise<{game: string; data: TftHomepageJson | HomepageJson;}[]> {
     const res = [];
 
-    for (const url of homepageUrls) {
-        if (url.includes('tft')) {
-            const data = await axios.get<TftHomepageJson>(url);
-            res.push(data.data);
-        } else {
-            const data = await axios.get<HomepageJson>(url);
-            res.push(data.data);
+    for (const game in homepageUrls) {
+        let data: AxiosResponse<(TftHomepageJson | HomepageJson)>;
+        switch (game) {
+            case "lol":
+                data = await axios.get<HomepageJson>(homepageUrls[game]);
+                break;
+            case "tft":
+                data = await axios.get<TftHomepageJson>(homepageUrls[game]);
+                break;
+            default:
+                logger.error(`Invalid game scraped: ${game}`);
+                continue;
         }
+        res.push({game: game, data: data.data});
     }
 
     return res;
@@ -98,22 +105,19 @@ export const scraper = async (json = false, name = 'events.json') => {
     const homePages = await getHomepages();
 
     for (const homePage of homePages) {
-        // Check if the homepage is from LOL or TFT.
-        if (homePage.hasOwnProperty('lol.client_settings.tft.tft_news_hub')) {
-            // For TFT
-            const page = <TftHomepageJson>homePage;
-            page['lol.client_settings.tft.tft_events'].events.forEach((event) => {
-                logger.info(`Found TFT event: ${parseTftEventName(event.url)}`);
-                dists.push({ event: parseTftEventName(event.url), url: replacePlaceholder(event.url), game: 'tft' });
-            });
-        } else {
-            // For LOL
-            const page = <HomepageJson>homePage;
+        if (homePage.game === "lol") {
+            const page = <HomepageJson>homePage.data;
             page.npe.navigation.forEach((value) => {
                 if (!value.isPlugin && value.url?.includes('prod.embed.rgpub.io')) {
-                    logger.info(`Found LOL event: ${parseTftEventName(value.url)}`);
-                    dists.push({ event: value.id, url: replacePlaceholder(value.url), game: 'lol' });
+                    logger.info(`Found LOL event: ${value.id}`);
+                    dists.push({ event: value.id, url: replacePlaceholder(value.url), game: homePage.game });
                 }
+            });
+        } else if (homePage.game === "tft") {
+            const page = <TftHomepageJson>homePage.data;
+            page['lol.client_settings.tft.tft_events'].events.forEach((event) => {
+                logger.info(`Found TFT event: ${parseTftEventName(event.url)}`);
+                dists.push({ event: parseTftEventName(event.url), url: replacePlaceholder(event.url), game: homePage.game });
             });
         }
     }
