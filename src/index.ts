@@ -38,12 +38,12 @@ const samba = checkEnvironment();
 const main = async () => {
     // Get Current Events
     const dists = await scraper();
-    logger.info(`Found ${dists.length} current events.`);
+    logger.info(`Found ${dists.length} potential current events.`);
 
     // Use stormrazor to download all events
     for (const dist of dists) {
         logger.info('Downloading event: ' + dist.event);
-        await handle(dist.url, `events/${dist.event}`);
+        await handle(dist.url, `events/${dist.game}/${dist.event}`);
     }
     // Sync to Samba Share
     if (samba) {
