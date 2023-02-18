@@ -1,5 +1,5 @@
 import { findFiles, findSvgs } from './finder';
-import { md5HashEncode } from '../util/crypto';
+import { md5HashEncode } from '../../util/crypto';
 
 import download from 'download';
 import Tracer from 'tracer';

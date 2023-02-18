@@ -1,6 +1,6 @@
 import { sync } from './sync';
 import { scraper } from './scraper';
-import { handle } from './stormrazor';
+import { handle } from './stormrazor/lol';
 import { checkEnvironment } from './sync';
 import { version } from '../package.json';
 import { greenBright, yellowBright } from 'colorette';

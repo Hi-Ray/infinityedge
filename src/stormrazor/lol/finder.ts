@@ -1,4 +1,4 @@
-import { md5HashEncode } from '../util/crypto';
+import { md5HashEncode } from '../../util/crypto';
 
 import fs from 'fs-extra';
 import Tracer from 'tracer';
