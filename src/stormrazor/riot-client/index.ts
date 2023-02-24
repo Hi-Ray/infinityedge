@@ -12,12 +12,17 @@ const processManifest = async (url: string, dir: string) => {
     const flattenedManifest = flattenObject(manifest);
 
     for (const value of Object.keys(flattenedManifest)) {
-        if (typeof manifest[value] === 'string') {
-            const file = manifest[value];
+        if (typeof flattenedManifest[value] === 'string') {
+            if (flattenedManifest[value] == '') continue;
+
+            const file = flattenedManifest[value];
             const urlm = url.split('/');
+
             urlm.pop();
+
             const urlNew = urlm.join('/');
             const dlurl = path.posix.join(urlNew, file).replace('https:/', 'https://');
+
             if (!dlurl.match(/\.[0-9a-z]+$/i)) continue;
 
             logger.warn(`Attempting to download ${dlurl}`);
