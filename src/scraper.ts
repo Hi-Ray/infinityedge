@@ -124,7 +124,7 @@ export const scraper = async (json = false, name = 'events.json') => {
         if (homePage.game === 'lol') {
             const page = <HomepageJson>homePage.data;
             page.npe.navigation.forEach((value) => {
-                if (!value.isPlugin && value.url?.includes('prod.embed.rgpub.io')) {
+                if (!value.isPlugin && value.url?.includes('embed.rgpub.io')) {
                     logger.info(`Found LOL event: ${value.id}`);
                     dists.push({ event: value.id, url: replacePlaceholder(value.url), game: homePage.game });
                 }
