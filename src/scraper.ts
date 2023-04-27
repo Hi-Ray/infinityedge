@@ -17,7 +17,7 @@ export const locale = 'en_US';
 
 // Homepage url.
 const homepageUrls = {
-    lol: 'https://lolstatic-a.akamaihd.net/lc-home-config/v1/live/lc_home_en_AU.json',
+    lol: 'https://lolstatic-a.akamaihd.net/lc-home-config/v1/live/lc_home_en_US.json',
     tft: 'https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=lol.client_settings.tft',
 };
 
@@ -107,7 +107,7 @@ export function parseTftEventName(str: string) {
  * Main logic for the scraper
  *
  * @async
- * @param [json=true] {boolean}
+ * @param [json=false] {boolean}
  * @param [name="events.json"] {string}
  */
 export const scraper = async (json = false, name = 'events.json') => {

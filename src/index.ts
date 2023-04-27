@@ -42,6 +42,7 @@ const main = async () => {
 
     // Use stormrazor to download all events
     for (const dist of dists) {
+        if (dist.url.includes('vendor')) continue;
         logger.info('Downloading event: ' + dist.event);
         await handle(dist.url, `events/${dist.game}/${dist.event}`);
     }

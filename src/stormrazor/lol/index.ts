@@ -67,13 +67,31 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
                     .join(basePath, `_/lib-embed/${fileType}/`, foundFile)
                     .replace(':/', '://')
                     .replace(':\\', '://')
-                    .replaceAll('\\', '/');
+                    .replaceAll('\\', '/')
+                    .replaceAll('mc-assets/', '');
                 logger.info(`Attempting to download ${altDownloadPath}`);
                 await download(altDownloadPath, tmpDir);
                 logger.info(`Downloaded ${altDownloadPath}`);
             } catch {
                 logger.warn(`Failed to download ${foundFile}`);
             }
+        }
+    }
+};
+
+/**
+ *
+ * @param files {string[]} An array of found external files.
+ * @param tmpDir The directory to save the files.
+ */
+const downloadURL = async (files: string[], tmpDir: string) => {
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].startsWith('/fe/') || files[i].includes(',') || files[i].startsWith('./')) continue;
+        logger.warn(`DOWNLOADING: ${files[i]}`);
+        try {
+            await download(files[i], `${tmpDir}/external`);
+        } catch (e) {
+            logger.error(`Error downloading: ${files[i]}`);
         }
     }
 };
@@ -125,7 +143,9 @@ const saveSvgs = async (foundSvgs: string[], tmpDir: string) => {
  */
 export const handle = async (distURL: string, tmpDir: string) => {
     // Regex for finding paths.
-    const pathRegex = /"\.?([\w\.\/-]*\.(?:jpg|png|gif|webm))/g;
+    const pathRegex = /"\.?([\w\.\/-]*\.(?:jpg|png|gif|webm|svg|webp))/g;
+
+    const externalFiles = /"(.*?)"/gimu;
 
     // The base path without the file.
     const basePath = path.dirname(distURL).replace(':/', '://');
@@ -146,20 +166,35 @@ export const handle = async (distURL: string, tmpDir: string) => {
     const content = await fs.readFile(path.join(tmpDir, fileName), { encoding: 'utf8' });
 
     // Find potential files.
-    const potentialFiles: string[] = [...content.matchAll(pathRegex)].map((m) => m[1]) ?? [];
+    const potentialFiles: string[] =
+        [...content.matchAll(pathRegex)].map((m) => m[1]).map((m) => m.replaceAll('/vendor', '')) ?? [];
+
+    // Find potential external files.
+    const potentialExternalFiles: string[] = [...content.matchAll(externalFiles)].map((m) => m[1]) ?? [];
+
+    // Total count of potential files.
+    const totalFiles: number = potentialFiles.length + potentialExternalFiles.length;
 
     // Log count of potential files.
-    logger.info(`Found ${potentialFiles.length} potential files.`);
+    logger.info(`Found ${totalFiles} potential files.`);
 
     // Finds the files from the potential files.
-    const foundFiles = await findFiles(tmpDir, potentialFiles);
+    const foundFiles: string[] = await findFiles(tmpDir, potentialFiles);
 
     // Finds the inline HTML SVGs from the file files.
-    const foundSvgs = await findSvgs(tmpDir, content);
+    const foundSvgs: string[] = await findSvgs(tmpDir, content);
+
+    // Cleanup the potential external files
+    const cleanedExternal: string[] = potentialExternalFiles.filter((file) =>
+        /(https?:\/\/.*\.(gif|jpe?g|tiff?|png|webp|bmp|webm|svg|mp4))/gimu.test(file),
+    );
 
     // Downloads the found files.
     await downloadFiles(foundFiles, tmpDir, basePath);
 
     // Saves the found SVGs.
     await saveSvgs(foundSvgs, tmpDir);
+
+    // Downloads the external urls found.
+    await downloadURL(cleanedExternal, tmpDir);
 };
