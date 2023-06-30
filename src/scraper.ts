@@ -31,6 +31,8 @@ const riotClientManifests = [
     'https://riot-client.secure.dyn.riotcdn.net/channels/public/rccontent/theme/manifest_live.json',
 ];
 
+const idBlacklist = ['overview', 'merch', 'latest_patch_notes', 'rcp-fe-lol-npe-rewards'];
+
 /**
  * Returns the homepage data.
  *
@@ -70,8 +72,9 @@ async function getMainFile(events: Event[]) {
 
             webData('script').each((_, link) => {
                 if (
-                    typeof link.attribs.src !== 'undefined' &&
-                    knownMainFiles.some((file) => link.attribs.src.includes(file))
+                    (typeof link.attribs.src !== 'undefined' &&
+                        knownMainFiles.some((file) => link.attribs.src.includes(file))) ||
+                    (typeof link.attribs.src !== 'undefined' && knownMainFiles.includes(link.attribs.src))
                 ) {
                     if (!link.attribs.src.includes('http')) {
                         const url = new URL(event.url ?? '');
@@ -124,20 +127,22 @@ export const scraper = async (json = false, name = 'events.json') => {
         if (homePage.game === 'lol') {
             const page = <HomepageJson>homePage.data;
             page.npe.navigation.forEach((value) => {
-                if (!value.isPlugin && value.url?.includes('embed.rgpub.io')) {
+                if (!value.isPlugin && value.url?.includes('embed.rgpub.io') && !idBlacklist.includes(value.id)) {
                     logger.info(`Found LOL event: ${value.id}`);
                     dists.push({ event: value.id, url: replacePlaceholder(value.url), game: homePage.game });
                 }
             });
         } else if (homePage.game === 'tft') {
             const page = <TftHomepageJson>homePage.data;
-            page['lol.client_settings.tft.tft_events'].events.forEach((event) => {
-                logger.info(`Found TFT event: ${parseTftEventName(event.url)}`);
-                dists.push({
-                    event: parseTftEventName(event.url),
-                    url: replacePlaceholder(event.url),
-                    game: homePage.game,
-                });
+            page['lol.client_settings.tft.tft_events'].events?.forEach((event) => {
+                if (event.url !== '') {
+                    logger.info(`Found TFT event: ${parseTftEventName(event.url)}`);
+                    dists.push({
+                        event: parseTftEventName(event.url),
+                        url: replacePlaceholder(event.url),
+                        game: homePage.game,
+                    });
+                }
             });
         }
     }

@@ -9,18 +9,19 @@ import path from 'path';
 const logger = Tracer.colorConsole();
 
 // Known main files for frontpages.
-export const knownMainFiles = ['dist.js', 'app.js'];
+export const knownMainFiles = ['dist.js', 'app.js', 'app'];
 
 /**
  * Checks for known main files.
  *
+ * @deprecated
  * @param fileName {string} The file name.
  */
 const checkForMainFile = (fileName: string) => {
     let foundMainFile = false;
 
     knownMainFiles.forEach((file) => {
-        if (fileName === file) {
+        if (fileName === file || file.includes(fileName)) {
             foundMainFile = true;
         }
     });
@@ -154,7 +155,7 @@ export const handle = async (distURL: string, tmpDir: string) => {
     const fileName = path.basename(distURL).split('?')[0];
 
     // check if file is a dist file.
-    checkForMainFile(fileName);
+    //checkForMainFile(fileName);
 
     // Create temporary directory.
     await fs.mkdir(tmpDir, { recursive: true });
