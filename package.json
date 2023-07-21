@@ -49,6 +49,7 @@
     "update-deps": "npx npm-check-updates -u"
   },
   "devDependencies": {
+    "@types/delete-empty": "^3.0.2",
     "@types/download": "^8.0.2",
     "@types/fs-extra": "^11.0.1",
     "@types/node": "^20.4.2",
@@ -67,6 +68,7 @@
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
     "colorette": "^2.0.20",
+    "delete-empty": "^3.0.0",
     "dotenv": "^16.3.1",
     "download": "^8.0.0",
     "finder": "^0.1.4",

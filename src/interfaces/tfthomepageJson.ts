@@ -7,8 +7,15 @@ export interface Event {
     url: string;
 }
 
+export interface promoButton {
+    enabled: boolean;
+    eventKey: string;
+    url: string;
+}
+
 export interface LolClientSettingsTftTftEvents {
-    events: Event[];
+    events?: Event[];
+    promoButtons?: promoButton[];
 }
 
 export interface LolClientSettingsTftTftHomeHub {

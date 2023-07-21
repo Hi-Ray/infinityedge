@@ -99,7 +99,10 @@ async function getMainFile(events: Event[]) {
  * @param str {string}
  */
 export function replacePlaceholder(str: string) {
-    return str.replaceAll('{current_country_locale}', locale).replaceAll('{locale}', locale);
+    return str
+        .replaceAll('{current_country_locale}', locale)
+        .replaceAll('{locale}', locale)
+        .replaceAll('{bcplocale}', '');
 }
 
 export function parseTftEventName(str: string) {
@@ -119,12 +122,13 @@ export const scraper = async (json = false, name = 'events.json') => {
 
     logger.info('Fetching riot-client assets');
 
-    for (const riotClientManifest of riotClientManifests) {
-        await processManifest(riotClientManifest, 'events');
-    }
+    // for (const riotClientManifest of riotClientManifests) {
+    //     await processManifest(riotClientManifest, 'events');
+    // }
 
     for (const homePage of homePages) {
         if (homePage.game === 'lol') {
+            continue;
             const page = <HomepageJson>homePage.data;
             page.npe.navigation.forEach((value) => {
                 if (!value.isPlugin && value.url?.includes('embed.rgpub.io') && !idBlacklist.includes(value.id)) {
@@ -140,6 +144,16 @@ export const scraper = async (json = false, name = 'events.json') => {
                     dists.push({
                         event: parseTftEventName(event.url),
                         url: replacePlaceholder(event.url),
+                        game: homePage.game,
+                    });
+                }
+            });
+            page['lol.client_settings.tft.tft_events'].promoButtons?.forEach((btn) => {
+                if (btn.url !== '') {
+                    logger.info(`Found TFT event: ${parseTftEventName(btn.url)}`);
+                    dists.push({
+                        event: parseTftEventName(btn.url),
+                        url: replacePlaceholder(btn.url),
                         game: homePage.game,
                     });
                 }
