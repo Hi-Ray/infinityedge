@@ -20,8 +20,10 @@ export const findFiles = async (exportDir: string, potentialFiles: string[]): Pr
     const foundFiles = potentialFiles.filter(
         (file) =>
             file.includes('lib-embed') ||
-            (!potentialFiles.includes(`_/lib-embed/images${file}`) &&
-                !potentialFiles.includes(`_/lib-embed/videos${file}`)),
+            file.match(/svgs?/gimu) ||
+            file.match(/videos?/gimu) ||
+            file.match(/images?/gimu) ||
+            file.match(/sounds?/gimu),
     );
 
     await fs.writeFile(path.join(exportDir, 'files.txt'), foundFiles.join('\n'), { flag: 'a' });

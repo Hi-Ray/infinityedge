@@ -5,6 +5,7 @@ import download from 'download';
 import Tracer from 'tracer';
 import fs from 'fs-extra';
 import path from 'path';
+import { removeEmptyDirectories } from '../../util/fs';
 
 const logger = Tracer.colorConsole();
 
@@ -56,6 +57,13 @@ const downloadFiles = async (foundFiles: string[], tmpDir: string, basePath: str
         const downloadPath = path.join(basePath, foundFile).replace(':/', '://').replace(':\\', '://');
 
         logger.info(`Attempting to download ${foundFile}`);
+
+        try {
+            await download(foundFile, tmpDir);
+            logger.info(`Downloaded ${foundFile}`);
+            continue;
+        } catch (e) {}
+
         try {
             // Downloads the file.
             await download(downloadPath, exportDir);
@@ -146,6 +154,8 @@ export const handle = async (distURL: string, tmpDir: string) => {
     // Regex for finding paths.
     const pathRegex = /"\.?([\w\.\/-]*\.(?:jpg|png|gif|webm|svg|webp))/g;
 
+    const altPathRegex = /"https:\/\/?([\w\.\/-]*\.(?:jpg|png|gif|webm|svg|webp))"/gimu;
+
     const externalFiles = /"(.*?)"/gimu;
 
     // The base path without the file.
@@ -170,6 +180,9 @@ export const handle = async (distURL: string, tmpDir: string) => {
     const potentialFiles: string[] =
         [...content.matchAll(pathRegex)].map((m) => m[1]).map((m) => m.replaceAll('/vendor', '')) ?? [];
 
+    const remainingFiles: string[] =
+        [...content.matchAll(altPathRegex)].map((m) => m[1]).map((m) => m?.replaceAll('/vendor', '')) ?? [];
+
     // Find potential external files.
     const potentialExternalFiles: string[] = [...content.matchAll(externalFiles)].map((m) => m[1]) ?? [];
 
@@ -181,6 +194,7 @@ export const handle = async (distURL: string, tmpDir: string) => {
 
     // Finds the files from the potential files.
     const foundFiles: string[] = await findFiles(tmpDir, potentialFiles);
+    const remainingFilesFound: string[] = await findFiles(tmpDir, remainingFiles);
 
     // Finds the inline HTML SVGs from the file files.
     const foundSvgs: string[] = await findSvgs(tmpDir, content);
@@ -192,10 +206,13 @@ export const handle = async (distURL: string, tmpDir: string) => {
 
     // Downloads the found files.
     await downloadFiles(foundFiles, tmpDir, basePath);
+    await downloadFiles(remainingFilesFound, tmpDir, basePath);
 
     // Saves the found SVGs.
     await saveSvgs(foundSvgs, tmpDir);
 
     // Downloads the external urls found.
     await downloadURL(cleanedExternal, tmpDir);
+
+    await removeEmptyDirectories('events');
 };

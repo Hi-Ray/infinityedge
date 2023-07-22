@@ -122,13 +122,12 @@ export const scraper = async (json = false, name = 'events.json') => {
 
     logger.info('Fetching riot-client assets');
 
-    // for (const riotClientManifest of riotClientManifests) {
-    //     await processManifest(riotClientManifest, 'events');
-    // }
+    for (const riotClientManifest of riotClientManifests) {
+        await processManifest(riotClientManifest, 'events');
+    }
 
     for (const homePage of homePages) {
         if (homePage.game === 'lol') {
-            continue;
             const page = <HomepageJson>homePage.data;
             page.npe.navigation.forEach((value) => {
                 if (!value.isPlugin && value.url?.includes('embed.rgpub.io') && !idBlacklist.includes(value.id)) {
