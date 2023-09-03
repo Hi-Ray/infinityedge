@@ -152,9 +152,9 @@ const saveSvgs = async (foundSvgs: string[], tmpDir: string) => {
  */
 export const handle = async (distURL: string, tmpDir: string) => {
     // Regex for finding paths.
-    const pathRegex = /"\.?([\w\.\/-]*\.(?:jpg|png|gif|webm|svg|webp))/g;
+    const pathRegex = /"\.?([\w\.\/-]*\.[a-z]{3,4})/g;
 
-    const altPathRegex = /"https:\/\/?([\w\.\/-]*\.(?:jpg|png|gif|webm|svg|webp))"/gimu;
+    const altPathRegex = /"https:\/\/?([\w\.\/-]*\.[a-z]{3,4})"/gimu;
 
     const externalFiles = /"(.*?)"/gimu;
 
@@ -201,7 +201,7 @@ export const handle = async (distURL: string, tmpDir: string) => {
 
     // Cleanup the potential external files
     const cleanedExternal: string[] = potentialExternalFiles.filter((file) =>
-        /(https?:\/\/.*\.(gif|jpe?g|tiff?|png|webp|bmp|webm|svg|mp4))/gimu.test(file),
+        /(https?:\/\/.*\.[a-z]{3,4})/gimu.test(file),
     );
 
     // Downloads the found files.
