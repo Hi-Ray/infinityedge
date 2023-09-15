@@ -32,8 +32,8 @@ dotenv.config();
 
 logger.info('Checking environment variables');
 
-// Check Samba Environmental Variables
-const samba = checkEnvironment();
+// Check FTP Environmental Variables
+const ftp = checkEnvironment();
 
 const main = async () => {
     // Get Current Events
@@ -48,7 +48,7 @@ const main = async () => {
     }
 
     // Sync to Samba Share
-    if (samba) {
+    if (ftp) {
         await sync();
     }
 };

@@ -1,10 +1,10 @@
-import SambaClient from 'samba-client';
 import Tracer from 'tracer';
 import dotenv from 'dotenv';
 import sftp from 'ssh2-sftp-client';
 
 import { PathLike } from 'fs';
 import * as fs from 'fs/promises';
+import path from 'path';
 
 const logger = Tracer.colorConsole();
 
@@ -36,7 +36,7 @@ export const checkEnvironment = (die = false) => {
 };
 
 /**
- * Gets all the samba directories.
+ * Gets all the ftp directories.
  *
  * @async
  * @param source {PathLike} the source directory.
@@ -47,7 +47,7 @@ const getDirectories = async (source: PathLike): Promise<string[]> =>
         .map((dirent) => dirent.name);
 
 /**
- * Get the samba file list.
+ * Get the ftp file list.
  *
  * @async
  * @param dirName {string}
@@ -77,29 +77,7 @@ const getFileList = async (dirName: string): Promise<string[]> => {
 const existsCache: string[] = [];
 
 /**
- * Verify that the samba directory exists.
- *
- * @async
- * @param client {SambaClient}
- * @param file {string}
- */
-const verifyDirectoryExists = async (client: SambaClient, file: string): Promise<void> => {
-    const pieces = file.split('/');
-    const range = [...Array(pieces.length).keys()];
-
-    for (const i of range) {
-        const name = pieces.slice(0, i).join('/');
-
-        if (!name.includes('.') && !existsCache.includes(name) && !(await client.fileExists(name))) {
-            logger.info('Making directory: ' + name);
-            await client.mkdir(name);
-            existsCache.push(name);
-        }
-    }
-};
-
-/**
- * Sync the data with the samba share.
+ * Sync the data with the FTP share.
  *
  * @async
  */
@@ -147,6 +125,24 @@ export const sync = async () => {
                         continue;
                     }
 
+                    if (
+                        !(await client.exists(
+                            path.dirname(
+                                `data/riot-client/${currentYear}/${currentMonth}/${
+                                    file.match(/\//g)?.length == 1 ? file : file.replace('riot-client/', '')
+                                }`,
+                            ),
+                        ))
+                    ) {
+                        await client.mkdir(
+                            path.dirname(
+                                `data/riot-client/${currentYear}/${currentMonth}/${
+                                    file.match(/\//g)?.length == 1 ? file : file.replace('riot-client/', '')
+                                }`,
+                            ),
+                            true,
+                        );
+                    }
                     await client.put(
                         `events/${file}`,
                         `data/riot-client/${currentYear}/${currentMonth}/${
@@ -162,6 +158,17 @@ export const sync = async () => {
                     logger.info(
                         'Transferring file ' + `data/${currentYear}/${file.replace('lol/', '').replace('tft/', '')}`,
                     );
+
+                    if (
+                        !(await client.exists(
+                            path.dirname(`data/${currentYear}/${file.replace('lol/', '').replace('tft/', '')}`),
+                        ))
+                    ) {
+                        await client.mkdir(
+                            path.dirname(`data/${currentYear}/${file.replace('lol/', '').replace('tft/', '')}`),
+                            true,
+                        );
+                    }
 
                     await client.put(
                         `events/${file}`,

@@ -43,7 +43,7 @@ steps:
         from_secret: ssh_password
       port:
         from_secret: ssh_port
-      command_timeout: 10m
+      command_timeout: 30m
       script:
         - git clone https://github.com/Hi-Ray/infinityedge.git
         - cd infinityedge

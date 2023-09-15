@@ -4,8 +4,8 @@ services:
     build: .
     image: node:bullseye
     environment:
-      - SAMBA_URL=${SAMBA_URL}
-      - SAMBA_USERNAME=${SAMBA_USERNAME}
-      - SAMBA_PASSWORD=${SAMBA_PASSWORD}
+      - FTP_URL=${FTP_URL}
+      - FTP_USERNAME=${FTP_USERNAME}
+      - FTP_PASSWORD=${FTP_PASSWORD}
     volumes:
       - ./events:/infinityedge/events
