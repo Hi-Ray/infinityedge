@@ -1,6 +1,7 @@
 import SambaClient from 'samba-client';
 import Tracer from 'tracer';
 import dotenv from 'dotenv';
+import sftp from 'ssh2-sftp-client';
 
 import { PathLike } from 'fs';
 import * as fs from 'fs/promises';
@@ -8,6 +9,7 @@ import * as fs from 'fs/promises';
 const logger = Tracer.colorConsole();
 
 const currentYear = new Date().getFullYear();
+const currentMonth = ('0' + (new Date().getMonth() + 1)).slice(-2);
 
 /**
  * Check that the important environment variables aren't empty/null.
@@ -15,7 +17,7 @@ const currentYear = new Date().getFullYear();
  * @param [die=false] {boolean}
  */
 export const checkEnvironment = (die = false) => {
-    const environment = [process.env.SAMBA_URL, process.env.SAMBA_USERNAME, process.env.SAMBA_PASSWORD].map((env) => {
+    const environment = [process.env.FTP_URL, process.env.FTP_USERNAME, process.env.FTP_PASSWORD].map((env) => {
         return typeof env !== 'undefined' && env !== null && env !== '';
     });
 
@@ -24,29 +26,13 @@ export const checkEnvironment = (die = false) => {
             logger.fatal(`One or more environment variables are not defined please check the ".env" file.`);
             process.exit(1);
         } else {
-            logger.info('One or more Samba environmental variables are not defined. Disabling Samba.');
+            logger.info('One or more FTP environmental variables are not defined. Disabling FTP.');
             return false;
         }
     }
 
-    logger.info('Samba syncing enabled.');
+    logger.info('FTP syncing enabled.');
     return true;
-};
-
-/**
- * Create a samba client.
- *
- * @returns {SambaClient}
- */
-export const createSamba = (): SambaClient => {
-    return new SambaClient({
-        address: process.env.SAMBA_URL || '',
-        username: process.env.SAMBA_USERNAME,
-        password: process.env.SAMBA_PASSWORD,
-        domain: 'WORKGROUP',
-        maxProtocol: 'SMB3',
-        maskCmd: true,
-    });
 };
 
 /**
@@ -74,9 +60,14 @@ const getFileList = async (dirName: string): Promise<string[]> => {
         if (item.isDirectory()) {
             files = [...files, ...(await getFileList(`${dirName}/${item.name}`))];
         } else {
+            if (item.name.toLowerCase().includes('.ds_store')) {
+                continue;
+            }
+
             files.push(`${dirName}/${item.name}`.replace('events/', ''));
         }
     }
+
     return files;
 };
 
@@ -115,32 +106,72 @@ const verifyDirectoryExists = async (client: SambaClient, file: string): Promise
 export const sync = async () => {
     checkEnvironment(true);
 
-    const client = createSamba();
+    const client = new sftp('infinityedge');
+
+    await client.connect({
+        username: process.env.FTP_USERNAME,
+        password: process.env.FTP_PASSWORD,
+        port: 22,
+        host: process.env.FTP_URL,
+    });
+
+    if (!(await client.exists('/data'))) {
+        logger.error('Could not find the data directory.');
+        process.exit(1);
+    }
+
+    if (!(await client.exists(`/data/${currentYear}`))) {
+        await client.mkdir(`/data/${currentYear}`);
+    }
+
     const folders = await getDirectories('events');
 
-    if (!(await client.fileExists(`events`))) {
-        await client.mkdir(`events`);
-    }
-
     existsCache.push('events');
-
-    if (!(await client.fileExists(`events/${currentYear}`))) {
-        await client.mkdir(`events/${currentYear}`);
-    }
 
     existsCache.push(`events/${currentYear}`);
 
     for (const event of folders) {
-        if (!(await client.fileExists(`events/${currentYear}/${event}`))) {
+        if (!(await client.exists(`data/${currentYear}/${event}`))) {
             const files = await getFileList(`events/${event}`);
 
             for (const file of files) {
-                logger.info('Transferring file' + file);
-                await verifyDirectoryExists(client, `events/${currentYear}/${file}`);
-                await client.sendFile(`events/${file}`, `events/${currentYear}/${file}`);
+                if (file.startsWith('riot-client')) {
+                    if (
+                        await client.exists(
+                            `data/riot-client/${currentYear}/${currentMonth}/${
+                                file.match(/\//g)?.length == 1 ? file : file.replace('riot-client/', '')
+                            }`,
+                        )
+                    ) {
+                        logger.info('file exists skipping');
+                        continue;
+                    }
+
+                    await client.put(
+                        `events/${file}`,
+                        `data/riot-client/${currentYear}/${currentMonth}/${
+                            file.match(/\//g)?.length == 1 ? file : file.replace('riot-client/', '')
+                        }`,
+                    );
+                } else {
+                    if (await client.exists(`data/${currentYear}/${file.replace('lol/', '').replace('tft/', '')}`)) {
+                        logger.info('file exists skipping');
+                        continue;
+                    }
+
+                    logger.info(
+                        'Transferring file ' + `data/${currentYear}/${file.replace('lol/', '').replace('tft/', '')}`,
+                    );
+
+                    await client.put(
+                        `events/${file}`,
+                        `data/${currentYear}/${file.replace('lol/', '').replace('tft/', '')}`,
+                    );
+                }
             }
         }
     }
+    await client.end();
 };
 
 if (require.main === module) {
