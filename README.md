@@ -14,9 +14,11 @@ Its main purpose its to watch over the frontend of the league of legends pages a
 upload the assets to universe.
 
 ## Supported OS's
+<p align="left">
 <img alt="Windows" title="Windows" src="https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/WIN.png">
 <img alt="Apple" title="Apple" src="https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/MAC.png">
 <img alt="Linux" title="Linux" src="https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/LIN.png">
+</p>
 
 ## Requirements
 - [Docker](https://www.docker.com/) (Optional)
