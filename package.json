@@ -75,5 +75,5 @@
     "ssh2-sftp-client": "^9.1.0",
     "tracer": "^1.1.6"
   },
-  "packageManager": "yarn@1.22.1"
+  "packageManager": "yarn@1.22.19"
 }
