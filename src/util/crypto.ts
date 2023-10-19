@@ -14,7 +14,7 @@ export const md5HashEncode = (data: string): string => {
 
 /**
  * Adds a truncated(to 7 characters) md5 hash(using the contents of the file) to the filename.
- * @param filepath {string} The file to add a hash to.
+ * @param filePath {string}
  */
 export const addmd5HashtoFile = (filePath: string): void => {
     const contents = fs.readFileSync(filePath, { encoding: 'utf-8' });
