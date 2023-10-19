@@ -23,7 +23,7 @@ export const addmd5HashtoFile = (filePath: string): void => {
 
     const truncatedHash = hash.substring(0, 7);
 
-    const existingFileName = filePath.substring(filePath.lastIndexOf(path.sep) + 1);
+    const existingFileName = filePath.substring(filePath.lastIndexOf('/') + 1);
 
     const fileNameArr = existingFileName.split('.');
 
@@ -31,7 +31,7 @@ export const addmd5HashtoFile = (filePath: string): void => {
 
     const newFileName = fileNameArr.join('.');
 
-    const existingFilePath = filePath.substring(0, filePath.lastIndexOf(path.sep) - 1);
+    const existingFilePath = filePath.substring(0, filePath.lastIndexOf('/'));
 
     fs.renameSync(filePath, path.join(existingFilePath, newFileName));
 };
