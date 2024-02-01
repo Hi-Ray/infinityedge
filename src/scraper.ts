@@ -18,7 +18,7 @@ export const locale = 'en_US';
 // Homepage url.
 const homepageUrls = {
     lol: 'https://lolstatic-a.akamaihd.net/lc-home-config/v1/live/lc_home_en_US.json',
-    tft: 'https://clientconfig.rpg.riotgames.com/api/v1/config/public?namespace=lol.client_settings.tft',
+    tft: 'https://clientconfig.bangingheads.net/api/v1/config/public?namespace=lol.client_settings.tft',
 };
 
 const riotClientManifests = [
