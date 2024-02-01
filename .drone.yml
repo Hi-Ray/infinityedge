@@ -45,6 +45,7 @@ steps:
         from_secret: ssh_port
       command_timeout: 30m
       script:
+        - docker image prune -f
         - git clone https://github.com/Hi-Ray/infinityedge.git
         - cd infinityedge
         - git pull
