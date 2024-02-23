@@ -46,7 +46,7 @@ steps:
       command_timeout: 30m
       script:
         - docker image prune -f
-        - find ./events -type f -mtime +30 
+        - find ./infinityedge/events -type f -mtime +30 
         - git clone https://github.com/Hi-Ray/infinityedge.git
         - cd infinityedge
         - git pull
