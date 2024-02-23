@@ -45,8 +45,9 @@ steps:
         from_secret: ssh_port
       command_timeout: 30m
       script:
+        - docker volume prune -a -f
         - docker image prune -f
-        - find ./infinityedge/events -type f -mtime +30 
+        - find ./infinityedge/events -type f -mtime +30 -delete
         - git clone https://github.com/Hi-Ray/infinityedge.git
         - cd infinityedge
         - git pull
