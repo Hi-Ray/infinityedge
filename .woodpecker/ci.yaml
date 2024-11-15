@@ -1,0 +1,61 @@
+when:
+  - event: push
+    branch: main
+
+steps:
+  - name: test
+    image: node:18-buster
+    commands:
+      - yarn
+      - yarn test
+
+  - name: linting
+    image: node:18-buster
+    commands:
+      - yarn
+      - yarn lint-test
+
+  - name: discord notification
+    image: appleboy/drone-discord
+    settings:
+      webhook_id:
+        from_secret: discord_id
+      webhook_token:
+        from_secret: discord_token
+      message: >
+        {{#success build.status}}
+          Build `{{build.number}}` succeeded.
+        {{else}}
+          Build `{{build.number}}` failed.  
+          Changes: {{commit.branch}} / {{commit.message}} from {{commit.author}}.  
+          See: {{build.link}}
+        {{/success}}
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: ssh_host
+      username:
+        from_secret: ssh_username
+      password:
+        from_secret: ssh_password
+      port:
+        from_secret: ssh_port
+      command_timeout: 30m
+      script:
+        - docker volume prune -f
+        - docker image prune -f
+        - git clone https://github.com/Hi-Ray/infinityedge.git
+        - cd infinityedge
+        - git pull
+        - yarn
+        - docker-compose down
+        - docker-compose rm
+        - docker-compose build
+        - docker-compose up -d
+    when:
+      branch:
+        - master
+      status:
+        - success
