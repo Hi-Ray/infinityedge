@@ -44,7 +44,11 @@ const main = async () => {
     for (const dist of dists) {
         if (dist.url.includes('vendor')) continue;
         logger.info('Downloading event: ' + dist.event);
-        await handle(dist.url, `events/${dist.game}/${dist.event}`);
+        try {
+            await handle(dist.url, `events/${dist.game}/${dist.event}`);
+        } catch (e) {
+            logger.error(e);
+        }
     }
 
     // Sync to Samba Share
